@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { Dialog, styled, Typography, Box, InputBase, TextField, Button } from '@mui/material'; 
 import { Close, DeleteOutline } from '@mui/icons-material';
 import useApi from '../hooks/useApi';
@@ -11,7 +12,7 @@ const dialogStyle = {
     maxHeight: '100%',
     boxShadow: 'none',
     borderRadius: '10px 10px 0 0',
-};
+}
 
 const Header = styled(Box)`
     display: flex;
@@ -49,7 +50,7 @@ const SendButton = styled(Button)`
     text-transform: none;
     border-radius: 18px;
     width: 100px;
-`;
+`
 
 const ComposeMail = ({ open, setOpenDrawer }) => {
     const [data, setData] = useState({});
@@ -61,76 +62,73 @@ const ComposeMail = ({ open, setOpenDrawer }) => {
         Password: process.env.REACT_APP_PASSWORD,
         Host: 'smtp.elasticemail.com',
         Port: 2525,
-    };
+    }
 
     const onValueChange = (e) => {
-        setData({ ...data, [e.target.name]: e.target.value });
-    };
+        setData({ ...data, [e.target.name]: e.target.value })
+    }
 
     const sendEmail = async (e) => {
         e.preventDefault();
 
-        try {
-            if (window.Email) {
-                const response = await window.Email.send({
-                    ...config,
-                    To: data.to,
-                    From: "liampayne2304@gmail.com",  
-                    Subject: data.subject,
-                    Body: data.body
-                });
-                alert(response);
-            }
-
-            const payload = {
-                to: data.to,
-                from: "liampayne2304@gmail.com",  
-                subject: data.subject,
-                body: data.body,
-                date: new Date(),
-                image: '',
-                name: 'Liam Payne',
-                starred: false,
-                type: 'sent'
-            };
-
-            await sentEmailService.call(payload);
-
-            if (!sentEmailService.error) {
-                setOpenDrawer(false);
-                setData({});
-            } else {
-                alert(`Error: ${sentEmailService.error}`);
-            }
-        } catch (error) {
-            alert(`Failed to send email: ${error.message}`);
+        if (window.Email) {
+            window.Email.send({
+                ...config,
+                To : data.to,
+                From : "liampayne2304@gmail.com",
+                Subject : data.subject,
+                Body : data.body
+            }).then(
+                message => alert(message)
+            );
         }
-    };
 
-    const closeComposeMail = async (e) => {
+        const payload = {
+            to : data.to,
+            from : "liampayne2304@gmail.com",
+            subject : data.subject,
+            body : data.body,
+            date: new Date(),
+            image: '',
+            name: 'Liam Payne',
+            starred: false,
+            type: 'sent'
+        }
+
+        sentEmailService.call(payload);
+
+        if (!sentEmailService.error) {
+            setOpenDrawer(false);
+            setData({});
+        } else {
+
+        }
+    }
+
+    const closeComposeMail = (e) => {
         e.preventDefault();
 
         const payload = {
-            to: data.to,
-            from: "liampayne2304@gmail.com",  
-            subject: data.subject,
-            body: data.body,
+            to : data.to,
+            from : "liampayne2304@gmail.com",
+            subject : data.subject,
+            body : data.body,
             date: new Date(),
             image: '',
             name: 'Liam Payne',
             starred: false,
             type: 'drafts'
-        };
+        }
 
-        await saveDraftService.call(payload);
+        saveDraftService.call(payload);
 
         if (!saveDraftService.error) {
             setOpenDrawer(false);
             setData({});
         } else {
-            alert(`Error: ${saveDraftService.error}`);
+
         }
-    };
+    }
 
     return (
         <Dialog
@@ -158,7 +156,7 @@ const ComposeMail = ({ open, setOpenDrawer }) => {
                 <DeleteOutline onClick={() => setOpenDrawer(false)} />
             </Footer>
         </Dialog>
-    );
-};
+    )
+}
 
 export default ComposeMail;
